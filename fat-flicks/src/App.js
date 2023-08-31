@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Axios from 'axios';
 // import { IMaskInput } from 'react-imask';
 import { Container, FormGroup, FormControl, TextField, Box, Input, InputLabel, Button, InputAdornment } from '@mui/material';
 import { Search, WidthNormal, Height } from '@mui/icons-material';
@@ -7,19 +8,19 @@ import './App.css';
 const base_url = 'https://secure-images.nike.com/is/image/DotCom/FD2631_600_A_PREM?wid=1920&hei=1920';
 
 
-function BuildUrl({sku, width, height}) {
-  //const angle = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'K', 'P']
-  const angle = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-  const urls = [];
-  //const xhr = new XMLHttpRequest();
+async function BuildUrl({sku, width, height}) {
   debugger;
-  angle.forEach((angle) => {
-    const url = `https://secure-images.nike.com/is/image/DotCom/${sku}_${angle}_PREM?wid=${width}&hei=${height}`;
-    //xhr.open('GET', url, false);
-    //const response = xhr.send();
-
-    urls.push({url, width})
-  })
+  //const angles = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'K', 'P']
+  const angles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+  const urls = [];
+  const fetchImages = async () => {
+    for (const angle of angles) {
+      const url = `https://secure-images.nike.com/is/image/DotCom/${sku}_${angle}_PREM?wid=${width}&hei=${height}`;
+      const response = await Axios.get(url)
+      urls.push({url, width})
+    }
+  }
+  await fetchImages();
   return urls;
 }
 function App() {
@@ -30,7 +31,7 @@ function App() {
 
   const handleSearch = async () => {
     const regex = '/^[A-Za-z0-9]{6}-[A-Za-z0-9]{3}$/';
-    const urls = BuildUrl({sku: searchInput, width: imageWidth, height: imageHeight});
+    const urls = await BuildUrl({sku: searchInput, width: imageWidth, height: imageHeight});
     setImages(urls);
   };
   return (
